@@ -1,14 +1,14 @@
 <?php
 
-namespace Tests\Core\Application\Services;
+namespace Tests\Unit\Core\Application\Services;
 
 use App\Core\Application\Repositories\IWorkingDaysRepository;
 use App\Core\Application\Services\WorkingDaysGenerator;
 use Carbon\Carbon;
 use Exception;
-use Tests\Core\Application\Helpers\EventCreator;
-use Tests\Core\Application\Helpers\WorkingHoursCreator;
 use Tests\TestCase;
+use Tests\Unit\Core\Application\Helpers\EventCreator;
+use Tests\Unit\Core\Application\Helpers\WorkingHoursCreator;
 
 class WorkingDaysGeneratorTest extends TestCase {
     use EventCreator, WorkingHoursCreator;

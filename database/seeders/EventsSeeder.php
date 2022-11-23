@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class EventsSeeder extends Seeder {
+
     /**
      * Run the database seeds.
      *
@@ -19,56 +20,96 @@ class EventsSeeder extends Seeder {
      */
     public function run(): void {
 
-        $overrideDays = [
+        $data = [
             [
-                'day' => 6,
-                'start' => '10:00',
-                'end' => '14:00'
+                'override_days' => [
+                    [
+                        'day' => 6,
+                        'start' => '10:00',
+                        'end' => '22:00'
+                    ]
+                ],
+                'time_offs' => [
+                    [
+                        'name' => 'Lunch break',
+                        'start' => '12:00',
+                        'end' => '13:00'
+                    ],
+                    [
+                        'name' => 'Cleaning break',
+                        'start' => '15:00',
+                        'end' => '16:00'
+                    ],
+                ],
+                'name' => 'Men Haircut',
+                'description' => fake()->text(),
+                'slot_duration' => Minute::from(10),
+                'buffer_time' => Minute::from(5),
+                'working_days' => range(1, 6),
+                'working_hours' => new Hours(
+                    startTime: '08:00',
+                    endTime: '20:00'
+                ),
+                'end_date' => Carbon::now()->addWeek()->toDateString(),
+                'accepts_per_slot' => 3
             ],
             [
-                'day' => 0,
-                'start' => '10:00',
-                'end' => '14:00'
+                'override_days' => [
+                    [
+                        'day' => 6,
+                        'start' => '10:00',
+                        'end' => '22:00'
+                    ]
+                ],
+                'time_offs' => [
+                    [
+                        'name' => 'Lunch break',
+                        'start' => '12:00',
+                        'end' => '13:00'
+                    ],
+                    [
+                        'name' => 'Cleaning break',
+                        'start' => '15:00',
+                        'end' => '16:00'
+                    ],
+                ],
+                'name' => 'Woman Haircut',
+                'description' => fake()->text(),
+                'slot_duration' => Minute::from(60),
+                'buffer_time' => Minute::from(10),
+                'working_days' => range(1, 6),
+                'working_hours' => new Hours(
+                    startTime: '08:00',
+                    endTime: '20:00'
+                ),
+                'end_date' => Carbon::now()->addWeek()->toDateString(),
+                'accepts_per_slot' => 3
             ],
         ];
 
-        $timeOffs = [
-            [
-                'name' => 'Launch',
-                'start' => '12:00',
-                'end' => '13:00'
-            ],
-            [
-                'name' => 'Clean',
-                'start' => '16:00',
-                'end' => '17:00'
-            ],
-        ];
+        foreach ($data as $item) {
+            $eventCreatorRequest = new EventCreatorRequest(
+                name: $item['name'],
+                description: $item['description'],
+                slotDuration: $item['slot_duration'],
+                bufferTime: $item['buffer_time'],
+                workingDays: $item['working_days'],
+                workingHours: $item['working_hours'],
+                overrideDays: array_map(fn($overrideDay) => new OverrideDay(
+                    day: $overrideDay['day'],
+                    startTime: $overrideDay['start'],
+                    endTime: $overrideDay['end']
+                ), $item['override_days']),
+                timeOffs: array_map(fn($timeOff) => new TimeOff(
+                    name: $timeOff['name'],
+                    startTime: $timeOff['start'],
+                    endTime: $timeOff['end']
+                ), $item['time_offs']),
+                endDate: $item['end_date'],
+                acceptsPerSlot: $item['accepts_per_slot']
+            );
 
-        $eventCreatorRequest = new EventCreatorRequest(
-            name: fake()->name(),
-            description: fake()->text(),
-            slotDuration: Minute::from(30),
-            bufferTime: Minute::from(10),
-            workingDays: range(0, 6),
-            workingHours: new Hours(
-                startTime: '09:00',
-                endTime: '18:00'
-            ),
-            overrideDays: array_map(fn($overrideDay) => new OverrideDay(
-                day: $overrideDay['day'],
-                startTime: $overrideDay['start'],
-                endTime: $overrideDay['end']
-            ), $overrideDays),
-            timeOffs: array_map(fn($timeOff) => new TimeOff(
-                name: $timeOff['name'],
-                startTime: $timeOff['start'],
-                endTime: $timeOff['end']
-            ), $timeOffs),
-            endDate: Carbon::now()->addWeek()->toDateString(),
-            acceptsPerSlot: 3
-        );
-
-        resolve(EventCreator::class)->perform($eventCreatorRequest);
+            resolve(EventCreator::class)->perform($eventCreatorRequest);
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\Core\Application\Repositories\IBookingsRepository;
 use App\Core\Application\Repositories\ITimeOffRepository;
 use App\Core\Application\Repositories\IWorkingDaysRepository;
 use App\Core\Application\ValueObjects\DailySlotsGeneratorDto;
+use App\Core\Domain\Entities\EBooking;
 use App\Core\Domain\Entities\EEvent;
 use App\Core\Domain\ValueObjects\Slot;
 use Carbon\Carbon;
@@ -39,7 +40,7 @@ class AvailableSlotBookingChecker {
     /**
      * @throws Exception
      */
-    public function isAvailable(string $bookingDate, EEvent $event): bool {
+    public function isAvailable(string $bookingDate, EEvent $event, int $slotsCount = 1): bool {
         $this->bookingDate = $bookingDate;
         $this->event = $event;
 
@@ -62,11 +63,11 @@ class AvailableSlotBookingChecker {
             endTime: $workingDay->getEndTime(),
             duration: $event->getTotalDuration(),
             timeOffs: $timeOffs,
-            bookings: $bookings,
+            bookings: [...$bookings, ...$this->generateDummyBookings($slotsCount)],
             acceptsPerSlot: $event->getAcceptPerSlot(),
         );
 
-       $slots = $this->dailySlotsGenerator->generate($generatorDto);
+        $slots = $this->dailySlotsGenerator->generate($generatorDto);
 
         return $this->isBookingTimeInArrayOfSlots($slots);
 
@@ -102,5 +103,31 @@ class AvailableSlotBookingChecker {
      */
     private function isInRangeOfHours(string $start, string $end, string $checking): bool {
         return $checking <= $end && $checking >= $start;
+    }
+
+    /**
+     * @param int $slotsCount
+     * @return array
+     */
+    private function generateDummyBookings(int $slotsCount): array {
+        $bookings = [];
+        for ($i = 0; $i < $slotsCount - 1; $i++) {
+            $bookings[] = $this->makeBooking();
+        }
+
+        return $bookings;
+    }
+
+    /**
+     * @return EBooking
+     */
+    private function makeBooking(): EBooking {
+        return new EBooking(
+            eventId: 1,
+            firstName: 'Umar',
+            lastName: 'Adilov',
+            email: 'adilovcode@gmail.com',
+            bookingDate: $this->bookingDate
+        );
     }
 }

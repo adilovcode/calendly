@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Core\Application\Helpers;
+namespace Tests\Unit\Core\Application\Helpers;
 
 use App\Core\Domain\Entities\ETimeOff;
 

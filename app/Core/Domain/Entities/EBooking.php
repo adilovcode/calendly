@@ -3,6 +3,8 @@
 namespace App\Core\Domain\Entities;
 
 use App\Core\Domain\ValueObjects\Hours;
+use App\Core\Domain\ValueObjects\Minute;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class EBooking implements IEntity {
@@ -113,6 +115,21 @@ class EBooking implements IEntity {
     public function setBookingDate(string $bookingDate): self {
         $this->bookingDate = $bookingDate;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStartTime(): string {
+        return Carbon::parse($this->getBookingDate())->format('H:i');
+    }
+
+    /**
+     * @param Minute $duration
+     * @return string
+     */
+    public function getEndTime(Minute $duration): string {
+        return Carbon::parse($this->getBookingDate())->addMinutes($duration->getValue())->format('H:i');
     }
 
     /**

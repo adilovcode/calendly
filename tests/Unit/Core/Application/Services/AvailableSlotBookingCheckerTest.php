@@ -1,28 +1,28 @@
 <?php
 
-namespace Tests\Core\Application\Services;
+namespace Tests\Unit\Core\Application\Services;
 
 use App\Core\Application\Repositories\IBookingsRepository;
 use App\Core\Application\Repositories\ITimeOffRepository;
 use App\Core\Application\Repositories\IWorkingDaysRepository;
 use App\Core\Application\Services\AvailableSlotBookingChecker;
-use App\Core\Application\Services\DailySlotsGenerator;
-use App\Core\Application\ValueObjects\DailySlotsGeneratorDto;
 use App\Core\Domain\Entities\EBooking;
 use Carbon\Carbon;
-use Tests\Core\Application\Helpers\BookingsCreator;
-use Tests\Core\Application\Helpers\EventCreator;
-use Tests\Core\Application\Helpers\TimeOffCreator;
-use Tests\Core\Application\Helpers\WorkingHoursCreator;
 use Tests\TestCase;
+use Tests\Unit\Core\Application\Helpers\BookingsCreator;
+use Tests\Unit\Core\Application\Helpers\EventCreator;
+use Tests\Unit\Core\Application\Helpers\TimeOffCreator;
+use Tests\Unit\Core\Application\Helpers\WorkingHoursCreator;
 
 class AvailableSlotBookingCheckerTest extends TestCase {
     use EventCreator, TimeOffCreator, WorkingHoursCreator, BookingsCreator;
 
+    /**
+     * @return void
+     */
     public function setUp(): void {
         parent::setUp();
 
-//        $this->mockInstance(DailySlotsGenerator::class);
         $this->mockInstance(IWorkingDaysRepository::class);
         $this->mockInstance(IBookingsRepository::class);
         $this->mockInstance(ITimeOffRepository::class);
@@ -30,6 +30,9 @@ class AvailableSlotBookingCheckerTest extends TestCase {
         $this->travelTo(Carbon::parse('2022-11-23'));
     }
 
+    /**
+     * @return void
+     */
     public function testIsAvailable(): void {
         $event = $this->makeEvent([
             'accepts_per_slot' => 1
@@ -74,22 +77,9 @@ class AvailableSlotBookingCheckerTest extends TestCase {
             ->andReturn($expectedTimeOffs)
             ->once();
 
-//        $this
-//            ->mocked(DailySlotsGenerator::class)
-//            ->shouldReceive('generate')
-//            ->withArgs(
-//                fn(DailySlotsGeneratorDto $generatorDto) => $generatorDto->getStartTime() === $expectedWorkingDay->getStartTime() &&
-//                    $generatorDto->getEndTime() === $expectedWorkingDay->getEndTime() &&
-//                    $generatorDto->getDuration()->getValue() === $event->getTotalDuration()->getValue() &&
-//                    $generatorDto->getTimeOffs() === $expectedTimeOffs &&
-//                    $generatorDto->getBookings() === $expectedBookings &&
-//                    $generatorDto->getAcceptsPerSlot() === $event->getAcceptPerSlot()
-//            )
-//            ->once();
-
         $response = resolve(AvailableSlotBookingChecker::class)->isAvailable('2022-11-23 15:20:00', $event);
 
-//        dd($response);
+        $this->assertFalse($response);
     }
 
     /**

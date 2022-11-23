@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Core\Application\Services;
+namespace Tests\Unit\Core\Application\Services;
 
 use App\Core\Application\Services\SlotsGenerator;
 use App\Core\Domain\ValueObjects\Minute;

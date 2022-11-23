@@ -10,6 +10,9 @@ use App\Core\Domain\ValueObjects\Minute;
 use Carbon\Carbon;
 
 class DailySlotsGenerator {
+
+    private DailySlotsGeneratorDto $generatorDto;
+
     /**
      * @param SlotsGenerator $slotsGenerator
      */
@@ -22,17 +25,15 @@ class DailySlotsGenerator {
      * @return array
      */
     public function generate(DailySlotsGeneratorDto $generatorDto): array {
+        $this->generatorDto = $generatorDto;
+
         $slots = [];
 
         $start = $generatorDto->getStartTime();
 
         $busyHours = [
             ...$this->makeHoursFromTimeOffs($generatorDto->getTimeOffs()),
-            ...$this->filterBookingHoursWithAcceptsPerSlot(
-                $generatorDto->getBookings(),
-                $generatorDto->getAcceptsPerSlot(),
-                $generatorDto->getDuration()
-            )
+            ...$this->filterBookingHoursWithAcceptsPerSlot()
         ];
 
         $busyHours = $this->orderHours(
@@ -56,30 +57,26 @@ class DailySlotsGenerator {
     }
 
     /**
-     * @param array $busyHours
-     * @param int $acceptsPerSlot
-     * @param Minute $duration
      * @return array
      */
-    private function filterBookingHoursWithAcceptsPerSlot(array $busyHours, int $acceptsPerSlot, Minute $duration): array {
+    private function filterBookingHoursWithAcceptsPerSlot(): array {
 
         $separator = '-';
 
-        $mutatedData = array_map(function (EBooking $booking) use ($duration, $separator) {
-
-            $startTime = Carbon::parse($booking->getBookingDate())->format('H:i');
-            $endTime = Carbon::parse($booking->getBookingDate())->addMinutes($duration->getValue())->format('H:i');
-
-            return $startTime . $separator . $endTime;
-        }, $busyHours);
+        $mutatedData = array_map(
+            function (EBooking $booking) use ($separator) {
+                return $booking->getStartTime() . $separator . $booking->getEndTime($this->generatorDto->getDuration());
+            },
+            $this->generatorDto->getBookings()
+        );
 
         $filteredData = array_filter(
             array_count_values($mutatedData),
-            fn($value) => $value >= $acceptsPerSlot
+            fn($value) => $value >= $this->generatorDto->getAcceptsPerSlot()
         );
 
         return array_map(
-            static function($hours) use ($separator) {
+            static function ($hours) use ($separator) {
                 [$start, $end] = explode($separator, $hours);
                 return new Hours(
                     startTime: $start,
@@ -114,7 +111,7 @@ class DailySlotsGenerator {
      * @return array
      */
     private function orderHours(array $hours): array {
-        usort($hours, function($first,$second){
+        usort($hours, function ($first, $second) {
             return $first->getStartTime() > $second->getStartTime();
         });
 
@@ -126,7 +123,7 @@ class DailySlotsGenerator {
      * @return array
      */
     private function makeHoursFromTimeOffs(array $timeOffs): array {
-        return array_map(fn (ETimeOff $timeOff) => new Hours(
+        return array_map(fn(ETimeOff $timeOff) => new Hours(
             startTime: $timeOff->getStartTime(),
             endTime: $timeOff->getEndTime()
         ), $timeOffs);

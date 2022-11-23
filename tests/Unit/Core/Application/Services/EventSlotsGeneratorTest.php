@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Core\Application\Services;
+namespace Tests\Unit\Core\Application\Services;
 
 use App\Core\Application\Repositories\IBookingsRepository;
 use App\Core\Application\Repositories\ITimeOffRepository;
@@ -11,11 +11,11 @@ use App\Core\Application\ValueObjects\DailySlotsGeneratorDto;
 use App\Core\Domain\Entities\EBooking;
 use App\Core\Domain\ValueObjects\WorkingDay;
 use Carbon\Carbon;
-use Tests\Core\Application\Helpers\BookingsCreator;
-use Tests\Core\Application\Helpers\EventCreator;
-use Tests\Core\Application\Helpers\TimeOffCreator;
-use Tests\Core\Application\Helpers\WorkingHoursCreator;
 use Tests\TestCase;
+use Tests\Unit\Core\Application\Helpers\BookingsCreator;
+use Tests\Unit\Core\Application\Helpers\EventCreator;
+use Tests\Unit\Core\Application\Helpers\TimeOffCreator;
+use Tests\Unit\Core\Application\Helpers\WorkingHoursCreator;
 
 class EventSlotsGeneratorTest extends TestCase {
     use EventCreator, WorkingHoursCreator, BookingsCreator, TimeOffCreator;

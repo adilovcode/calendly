@@ -127,7 +127,7 @@ class EventCreator {
     private function validateTimeOffs(array $timeOffs): void {
         foreach ($timeOffs as $cKey => $checkingTimeOff) {
             foreach ($timeOffs as $key => $timeOff) {
-                if ($cKey !== $key && $this->doesTimeOffsHasConflict($checkingTimeOff, $timeOff)) {
+                if ($cKey !== $key && $this->doesTimeOffsHaveConflict($checkingTimeOff, $timeOff)) {
                     throw new TimeRangeException("Time-off has conflicts");
                 }
             }
@@ -139,7 +139,7 @@ class EventCreator {
      * @param TimeOff $second
      * @return bool
      */
-    private function doesTimeOffsHasConflict(TimeOff $first, TimeOff $second): bool {
+    private function doesTimeOffsHaveConflict(TimeOff $first, TimeOff $second): bool {
         return ($first->getStartTime() <= $second->getStartTime() && $first->getEndTime() >= $second->getStartTime()) ||
             ($first->getStartTime() <= $second->getEndTime() && $first->getEndTime() >= $second->getEndTime());
     }

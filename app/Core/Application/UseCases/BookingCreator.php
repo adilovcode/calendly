@@ -34,13 +34,13 @@ class BookingCreator {
 
         $event = $this->eventRepository->fetchById($request->getEventId());
 
-        $isAvailable = $this->availableSlotBookingChecker->isAvailable($request->getBookingDate(), $event);
+        $isAvailable = $this->availableSlotBookingChecker->isAvailable($request->getBookingDate(), $event, $request->getSlotsCount());
 
         if (!$isAvailable) {
             throw new \RuntimeException("Slots are not available");
         }
 
-        $this->bookingsRepository->store($this->generateBooking());
+        $this->createBookings();
     }
 
     /**
@@ -60,7 +60,16 @@ class BookingCreator {
      * @return void
      * @throws ValidationException
      */
-    public function validate(): void {
+    private function validate(): void {
         $this->validator->make($this->request->toArray(), $this->request->rules())->validate();
+    }
+
+    /**
+     * @return void
+     */
+    private function createBookings(): void {
+        for ($i = 0; $i < $this->request->getSlotsCount(); $i++) {
+            $this->bookingsRepository->store($this->generateBooking());
+        }
     }
 }

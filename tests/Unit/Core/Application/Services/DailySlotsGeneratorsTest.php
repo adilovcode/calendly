@@ -1,16 +1,15 @@
 <?php
 
-namespace Tests\Core\Application\Services;
+namespace Tests\Unit\Core\Application\Services;
 
 use App\Core\Application\Services\DailySlotsGenerator;
 use App\Core\Application\ValueObjects\DailySlotsGeneratorDto;
-use App\Core\Domain\ValueObjects\Hours;
 use App\Core\Domain\ValueObjects\Minute;
 use App\Core\Domain\ValueObjects\Slot;
 use Carbon\Carbon;
-use Tests\Core\Application\Helpers\BookingsCreator;
-use Tests\Core\Application\Helpers\TimeOffCreator;
 use Tests\TestCase;
+use Tests\Unit\Core\Application\Helpers\BookingsCreator;
+use Tests\Unit\Core\Application\Helpers\TimeOffCreator;
 
 class DailySlotsGeneratorsTest extends TestCase {
     use BookingsCreator, TimeOffCreator;
@@ -57,14 +56,14 @@ class DailySlotsGeneratorsTest extends TestCase {
         $expectedSlots = ['09:00', '09:30', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '17:00', '17:30'];
 
         $timeOffs = [
-            new Hours(
-                startTime: '12:00',
-                endTime: '13:00'
-            ),
-            new Hours(
-                startTime: '15:00',
-                endTime: '17:00'
-            ),
+            $this->makeTimeOff([
+                'start_time' => '12:00',
+                'end_time' => '13:00'
+            ]),
+            $this->makeTimeOff([
+                'start_time' => '15:00',
+                'end_time' => '17:00'
+            ])
         ];
 
         $bookings = [
