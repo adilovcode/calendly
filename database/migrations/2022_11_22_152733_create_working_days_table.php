@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->uuid('id')->unique();
             $table->uuid('event_id');
             $table->foreign('event_id')->references('id')->on('events');
-            $table->tinyInteger('day');
+            $table->tinyInteger('day'); // 0 - 6
             $table->string('start_time');
             $table->string('end_time');
             $table->timestamps();

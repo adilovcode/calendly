@@ -50,7 +50,7 @@ class EventsSeeder extends Seeder {
                     startTime: '08:00',
                     endTime: '20:00'
                 ),
-                'end_date' => Carbon::now()->addWeek()->toDateString(),
+                'bookable_in_advance' => 7,
                 'accepts_per_slot' => 3
             ],
             [
@@ -82,7 +82,7 @@ class EventsSeeder extends Seeder {
                     startTime: '08:00',
                     endTime: '20:00'
                 ),
-                'end_date' => Carbon::now()->addWeek()->toDateString(),
+                'bookable_in_advance' => 7,
                 'accepts_per_slot' => 3
             ],
         ];
@@ -105,7 +105,7 @@ class EventsSeeder extends Seeder {
                     startTime: $timeOff['start'],
                     endTime: $timeOff['end']
                 ), $item['time_offs']),
-                endDate: $item['end_date'],
+                bookableInAdvance: $item['bookable_in_advance'],
                 acceptsPerSlot: $item['accepts_per_slot']
             );
 

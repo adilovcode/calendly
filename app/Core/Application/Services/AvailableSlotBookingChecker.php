@@ -58,8 +58,10 @@ class AvailableSlotBookingChecker {
         $bookings = $this->bookingsRepository->fetchByDateEventId($event->getId(), Carbon::parse($bookingDate)->toDateString());
         $timeOffs = $this->timeOffRepository->fetchByEventId($event->getId());
 
+        $isToday = Carbon::now()->dayOfWeek == $workingDay->getDay();
+
         $generatorDto = new DailySlotsGeneratorDto(
-            startTime: $workingDay->getStartTime(),
+            startTime: $isToday ? Carbon::now()->format('H:i') : $workingDay->getStartTime(),
             endTime: $workingDay->getEndTime(),
             duration: $event->getTotalDuration(),
             timeOffs: $timeOffs,
@@ -88,7 +90,7 @@ class AvailableSlotBookingChecker {
     private function validateIfiIEventDateRange(): void {
         if (!$this->isInRangeOfHours(
             Carbon::now()->toDateString(),
-            $this->event->getEndDate(),
+            Carbon::now()->addDays($this->event->getBookableInAdvance()),
             $this->bookingDate
         )) {
             throw new Exception("Out of event date range");

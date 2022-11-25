@@ -21,6 +21,9 @@ class DailySlotsGenerator {
     ) {}
 
     /**
+     *
+     * 08:00     12:00 - 13:00   15:00 -- 15:30            20:00
+     *
      * @param DailySlotsGeneratorDto $generatorDto
      * @return array
      */

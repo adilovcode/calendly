@@ -13,8 +13,8 @@ class EEvent implements IEntity {
         private string $description,
         private Minute $duration,
         private Minute $bufferTime,
-        private string $endDate,
-        private int $acceptPerSlot
+        private string $bookableInAdvance,
+        private int    $acceptPerSlot
     ) {
         $this->id = Str::uuid();
     }
@@ -118,16 +118,16 @@ class EEvent implements IEntity {
     /**
      * @return string
      */
-    public function getEndDate(): string {
-        return $this->endDate;
+    public function getBookableInAdvance(): string {
+        return $this->bookableInAdvance;
     }
 
     /**
-     * @param string $endDate
+     * @param string $bookableInAdvance
      * @return self
      */
-    public function setEndDate(string $endDate): self {
-        $this->endDate = $endDate;
+    public function setBookableInAdvance(string $bookableInAdvance): self {
+        $this->bookableInAdvance = $bookableInAdvance;
         return $this;
     }
 
@@ -145,7 +145,7 @@ class EEvent implements IEntity {
             'description' => $this->getDescription(),
             'duration' => $this->getDuration()->getValue(),
             'buffer_time' => $this->getBufferTime()->getValue(),
-            'end_date' => $this->getEndDate(),
+            'bookable_in_advance' => $this->getBookableInAdvance(),
             'accept_per_slot' => $this->getAcceptPerSlot()
         ];
     }

@@ -20,8 +20,8 @@ class EventCreatorRequest implements IRequest {
         private readonly Hours  $workingHours,
         private readonly array  $overrideDays,
         private readonly array  $timeOffs,
-        private readonly string $endDate,
-        private readonly int $acceptsPerSlot
+        private readonly string $bookableInAdvance,
+        private readonly int    $acceptsPerSlot
     ) {}
 
     /**
@@ -90,8 +90,8 @@ class EventCreatorRequest implements IRequest {
     /**
      * @return string
      */
-    public function getEndDate(): string {
-        return $this->endDate;
+    public function getBookableInAdvance(): string {
+        return $this->bookableInAdvance;
     }
 
     /**
@@ -103,7 +103,7 @@ class EventCreatorRequest implements IRequest {
             'description' => $this->getDescription(),
             'slot_duration' => $this->getSlotDuration()->getValue(),
             'buffer_time' => $this->getBufferTime()->getValue(),
-            'end_date' => $this->getEndDate(),
+            'bookable_in_advance' => $this->getBookableInAdvance(),
 
             'time_offs' => array_map(
                 fn(TimeOff $timeOff) => [
@@ -152,7 +152,7 @@ class EventCreatorRequest implements IRequest {
             'description' => 'nullable',
             'slot_duration' => 'required|min:5|max:720|numeric',
             'buffer_time' => 'nullable|numeric',
-            'end_date' => 'required|date',
+            'bookable_in_advance' => 'required|integer',
 
             'time_offs' => 'nullable|array',
             'time_offs.*.name' => 'required|string|min:3',

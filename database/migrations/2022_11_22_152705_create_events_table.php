@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->bigInteger('duration');
             $table->bigInteger('buffer_time')->default(0);
-            $table->date('end_date');
+            $table->bigInteger('bookable_in_advance');
             $table->bigInteger('accept_per_slot')->default(1);
             $table->timestamps();
         });

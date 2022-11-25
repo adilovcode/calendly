@@ -21,7 +21,7 @@ class Event extends Model {
       'description',
       'duration',
       'buffer_time',
-      'end_date',
+      'bookable_in_advance',
       'accept_per_slot'
     ];
 
@@ -34,7 +34,7 @@ class Event extends Model {
             description: $this->description,
             duration: Minute::from($this->duration),
             bufferTime: Minute::from($this->buffer_time),
-            endDate: $this->end_date,
+            bookableInAdvance: $this->bookable_in_advance,
             acceptPerSlot: $this->accept_per_slot
         ))->setId($this->id);
     }

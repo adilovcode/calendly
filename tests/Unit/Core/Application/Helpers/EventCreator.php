@@ -17,7 +17,7 @@ trait EventCreator {
             description: $attributes['description'] ?? 'description',
             duration: Minute::from($attributes['duration'] ?? 30),
             bufferTime: Minute::from($attributes['duration'] ?? 10),
-            endDate: $attributes['end_date'] ?? Carbon::now()->addWeek(),
+            bookableInAdvance: $attributes['end_date'] ?? 7,
             acceptPerSlot: $attributes['accepts_per_slot'] ?? 3
         );
     }

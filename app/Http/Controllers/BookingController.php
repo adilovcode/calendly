@@ -6,6 +6,7 @@ use App\Core\Application\UseCases\BookingCreator;
 use App\Core\Application\ValidationRequests\BookingCreatorValidationRequest;
 use Exception;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller {
     public function __construct(
@@ -18,7 +19,15 @@ class BookingController extends Controller {
      * @throws Exception
      */
     public function store(BookingCreatorValidationRequest $request): Response {
-        $this->bookingCreator->perform($request->toDto());
+        DB::beginTransaction();
+        try {
+
+            $this->bookingCreator->perform($request->toDto());
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        DB::commit();
 
         return response('', 201);
     }

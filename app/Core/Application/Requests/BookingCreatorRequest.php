@@ -2,15 +2,14 @@
 
 namespace App\Core\Application\Requests;
 
+use App\Core\Application\ValueObjects\PersonalInformation;
+
 class BookingCreatorRequest implements IRequest {
 
     public function __construct(
-        private readonly string $email,
-        private readonly string $firstName,
-        private readonly string $lastName,
+        private readonly array $personalInformation,
         private readonly string $bookingDate,
         private readonly string $eventId,
-        private readonly int $slotsCount,
     ) {}
 
     /**
@@ -21,24 +20,10 @@ class BookingCreatorRequest implements IRequest {
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getEmail(): string {
-        return $this->email;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName(): string {
-        return $this->firstName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName(): string {
-        return $this->lastName;
+    public function getPersonalInformation(): array {
+        return $this->personalInformation;
     }
 
     /**
@@ -47,24 +32,16 @@ class BookingCreatorRequest implements IRequest {
     public function getBookingDate(): string {
         return $this->bookingDate;
     }
-
-    /**
-     * @return int
-     */
-    public function getSlotsCount(): int {
-        return $this->slotsCount;
-    }
-
     /**
      * @return array
      */
     public function toArray(): array {
         return [
-            'email' => $this->getEmail(),
-            'first_name' => $this->getFirstName(),
-            'last_name' => $this->getLastName(),
+            "data" => array_map(
+                fn(PersonalInformation $information) => $information->toArray(),
+                $this->getPersonalInformation()
+            ),
             'booking_date' => $this->getBookingDate(),
-            'slots_count' => $this->getSlotsCount(),
             'event_id' => $this->getEventId()
         ];
     }
@@ -74,11 +51,11 @@ class BookingCreatorRequest implements IRequest {
      */
     public function rules(): array {
         return [
-            'email' => 'required|email',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
+            'data' => 'required|array',
+            'data.*.email' => 'required|email',
+            'data.*.first_name' => 'required|string',
+            'data.*.last_name' => 'required|string',
             'booking_date' => 'required|date',
-            'slots_count' => 'required|integer|min:1',
             'event_id' => 'required|exists:events,id'
         ];
     }

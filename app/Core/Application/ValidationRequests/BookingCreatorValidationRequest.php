@@ -3,6 +3,7 @@
 namespace App\Core\Application\ValidationRequests;
 
 use App\Core\Application\Requests\BookingCreatorRequest;
+use App\Core\Application\ValueObjects\PersonalInformation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookingCreatorValidationRequest extends FormRequest {
@@ -11,11 +12,11 @@ class BookingCreatorValidationRequest extends FormRequest {
      */
     public function rules(): array {
         return [
-            'email' => 'required|email',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
+            'data' => 'required|array',
+            'data.*.email' => 'required|email',
+            'data.*.first_name' => 'required|string',
+            'data.*.last_name' => 'required|string',
             'booking_date' => 'required|date',
-            'slots_count' => 'required|integer|min:1',
             'event_id' => 'required|exists:events,id'
         ];
     }
@@ -25,12 +26,20 @@ class BookingCreatorValidationRequest extends FormRequest {
      */
     public function toDto(): BookingCreatorRequest {
         return new BookingCreatorRequest(
-            email: $this->get('email'),
-            firstName: $this->get('first_name'),
-            lastName: $this->get('last_name'),
+            personalInformation: $this->generatePersonalInfoObjects(),
             bookingDate: $this->get('booking_date'),
             eventId: $this->get('event_id'),
-            slotsCount: $this->get('slots_count')
         );
+    }
+
+    /**
+     * @return array
+     */
+    private function generatePersonalInfoObjects(): array {
+        return array_map(fn($personalInfo) => new PersonalInformation(
+            email: $personalInfo['email'],
+            firstName: $personalInfo['first_name'],
+            lastName: $personalInfo['last_name']
+        ), $this->get('data'));
     }
 }

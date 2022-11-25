@@ -19,7 +19,7 @@ class WorkingDaysGenerator {
      * @return WorkingDay[]
      */
     public function generate(EEvent $event): array {
-        $dateRange = $this->makeDateRange(Carbon::now(), Carbon::parse($event->getEndDate()));
+        $dateRange = $this->makeDateRange(Carbon::now(), Carbon::now()->addDays($event->getBookableInAdvance()));
 
         $workingDays = $this->workingHoursRepository->fetchByEventId($event->getId());
 

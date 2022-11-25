@@ -54,7 +54,7 @@ class EventCreatorValidationRequest extends FormRequest {
             ),
             overrideDays: $this->generateOverrideDays(),
             timeOffs: $this->generateTimeOffs(),
-            endDate: $this->get('end_date')
+            bookableInAdvance: $this->get('end_date')
         );
     }
 

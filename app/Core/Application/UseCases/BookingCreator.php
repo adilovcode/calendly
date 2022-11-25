@@ -6,6 +6,7 @@ use App\Core\Application\Repositories\IBookingsRepository;
 use App\Core\Application\Repositories\IEventRepository;
 use App\Core\Application\Requests\BookingCreatorRequest;
 use App\Core\Application\Services\AvailableSlotBookingChecker;
+use App\Core\Application\ValueObjects\PersonalInformation;
 use App\Core\Domain\Entities\EBooking;
 use Exception;
 use Illuminate\Validation\Factory as Validator;
@@ -34,7 +35,11 @@ class BookingCreator {
 
         $event = $this->eventRepository->fetchById($request->getEventId());
 
-        $isAvailable = $this->availableSlotBookingChecker->isAvailable($request->getBookingDate(), $event, $request->getSlotsCount());
+        $isAvailable = $this->availableSlotBookingChecker->isAvailable(
+            $request->getBookingDate(),
+            $event,
+            count($request->getPersonalInformation())
+        );
 
         if (!$isAvailable) {
             throw new \RuntimeException("Slots are not available");
@@ -44,15 +49,18 @@ class BookingCreator {
     }
 
     /**
-     * @return EBooking
+     * @return array
      */
-    private function generateBooking(): EBooking {
-        return new EBooking(
-          eventId: $this->request->getEventId(),
-            firstName: $this->request->getFirstName(),
-            lastName: $this->request->getLastName(),
-            email: $this->request->getEmail(),
-            bookingDate: $this->request->getBookingDate()
+    private function generateBookings(): array {
+        return array_map(
+            fn(PersonalInformation $personalInfo) =>  new EBooking(
+                eventId: $this->request->getEventId(),
+                firstName: $personalInfo->getFirstName(),
+                lastName: $personalInfo->getLastName(),
+                email: $personalInfo->getEmail(),
+                bookingDate: $this->request->getBookingDate()
+            ),
+            $this->request->getPersonalInformation()
         );
     }
 
@@ -68,8 +76,8 @@ class BookingCreator {
      * @return void
      */
     private function createBookings(): void {
-        for ($i = 0; $i < $this->request->getSlotsCount(); $i++) {
-            $this->bookingsRepository->store($this->generateBooking());
+        foreach ($this->generateBookings() as $generateBooking) {
+            $this->bookingsRepository->store($generateBooking);
         }
     }
 }

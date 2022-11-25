@@ -61,7 +61,7 @@ class EventCreator {
             description: $this->creatorRequest->getDescription(),
             duration: $this->creatorRequest->getSlotDuration(),
             bufferTime: $this->creatorRequest->getBufferTime(),
-            endDate: $this->creatorRequest->getEndDate(),
+            bookableInAdvance: $this->creatorRequest->getBookableInAdvance(),
             acceptPerSlot:  $this->creatorRequest->getAcceptsPerSlot()
         );
     }
